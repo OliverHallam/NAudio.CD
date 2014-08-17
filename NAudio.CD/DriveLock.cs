@@ -27,13 +27,22 @@ namespace NAudio.CD
 
         private void Dispose(bool disposing)
         {
-            PreventMediaRemoval(this.handle, false);
+            if (!PreventMediaRemoval(this.handle, false))
+            {
+                if (disposing)
+                {
+                    // if this didn't work then there's not much we can do in a finalizer
+                    Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+                }
+            }
         }
 
         public static DriveLock Lock(SafeFileHandle handle)
         {
             if (!PreventMediaRemoval(handle, true))
-                throw new Exception();
+            {
+                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+            }
 
             return new DriveLock(handle);
         }

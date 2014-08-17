@@ -83,8 +83,7 @@ namespace NAudio.CD
         private unsafe int ReadSector(byte[] buffer, int offset, int count)
         {
             var sectorCount = Math.Min(SectorsToRead, this.currentSector - this.endSector);
-            if (count < sectorCount)
-                throw new Exception();
+            Debug.Assert(count >= sectorCount);
 
             var info = new NativeMethods.RAW_READ_INFO
                        {
